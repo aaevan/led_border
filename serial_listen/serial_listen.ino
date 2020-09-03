@@ -25,6 +25,7 @@ void loop() {
 
     // look for the next valid integer in the incoming serial stream:
     //int led_index = Serial.parseInt();
+    int index = Serial.parseInt();
     int red = Serial.parseInt();
     // do it again:
     int green = Serial.parseInt();
@@ -34,13 +35,16 @@ void loop() {
     // look for the newline. That's the end of your sentence:
     if (Serial.read() == '\n') {
       //print the three numbers in one string as hexadecimal:
-      Serial.print(red, HEX);
+      Serial.print(index);
+      Serial.print(',');
+      Serial.print(red);
       Serial.print(',');
       Serial.print(green);
       Serial.print(',');
-      Serial.println(blue, HEX);
+      Serial.println(blue);
       Serial.println(count);
-      leds[count] = CRGB(red, green, blue);
+      //leds[count] = CRGB(red, green, blue);
+      leds[index] = CRGB(red, green, blue);
       count = (count + 1) % NUM_LEDS;
       FastLED.show();
     }
