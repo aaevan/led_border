@@ -50,19 +50,41 @@ def get_rgb_of_pixel(coords=(0, 0)):
     r, g, b = [int(val, 16) for val in (red, green, blue)]
     return (r, g, b)    
 
+def fixed_samples_from_border_coords(
+    border_coords,
+    n_samples=10,
+    sample_width=100,
+    sample_height=100,
+    edge_buffer=2,#pixels
+):
+    fixed_samples = []
+    for coord in border_coords:
+        x1, y1 = coord
+        x2, y2 = (
+            (x1 + sample_width) - edge_buffer, 
+            (y1 + sample_height) - edge_buffer,
+        )
+        sample_coords = [rand_coord_in_rect(x1, y1, x2, y2) for _ in range(n_samples)]
+        fixed_samples.append(sample_coords)
+    return fixed_samples
+
 def take_n_samples_from_rect(
     top_left_coord=(0, 0),
     n_samples=10, 
     sample_width=100,
     sample_height=100,
     edge_buffer=2,#pixels
+    fixed_samples=None
 ):
     x1, y1 = top_left_coord
     x2, y2 = (
         (x1 + sample_width) - edge_buffer, 
         (y1 + sample_height) - edge_buffer,
     )
-    coords = [rand_coord_in_rect(x1, y1, x2, y2) for _ in range(n_samples)]
+    if fixed_samples is not None:
+        coords = fixed_samples
+    else:
+        coords = [rand_coord_in_rect(x1, y1, x2, y2) for _ in range(n_samples)]
     rgb_samples = [get_rgb_of_pixel(coords=coord) for coord in coords]
     return rgb_samples
 
@@ -133,17 +155,3 @@ def get_edge_sample_coords(
         print("left:", left_edge_coords)
     output_coord_list = top_edge_coords + right_edge_coords + bottom_edge_coords + left_edge_coords
     return output_coord_list
-
-#count = 0
-#while True:
-    #edge_coords = get_edge_sample_coords()
-    #print("edge_coords:\n", edge_coords)
-    #samples = [take_n_samples_from_rect(top_left_coord=coord) for coord in edge_coords]
-    #print("samples:\n", samples)
-    #mean_rgb_values = [
-        #(index, mean_rgb_from_samples(sample)) for index, sample in enumerate(samples)
-    #]
-    #if count % 10 == 0:
-        #print("count: {}".format(count))
-    #print("count: {}, mean_rgb_values:\n{}".format(count, mean_rgb_values))
-    #count = (count + 1) % 1000
