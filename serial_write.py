@@ -2,6 +2,7 @@ from time import sleep
 import serial
 from random import randint, choice
 from xlib_dropper import *
+from find_corners import *
 
 def rand_rgb(ceiling=50):
     return [randint(0, ceiling) for _ in range(3)]
@@ -12,12 +13,24 @@ def get_opposite_color(rgb_tuple):
 
 def main():
     ser = serial.Serial('/dev/ttyUSB0', 57600) # Establish the connection on a specific port
+    screen_name = "VGA1"
+    top_left, width, height = find_corners(screen_name=screen_name)
+    print(screen_name, top_left, width, height)
+    x_offset, y_offset = top_left
+    print("width of {} is {}".format(screen_name, width))
+    print("height of {} is {}".format(screen_name, height))
     border_coords = get_edge_sample_coords(
+        width=width, 
+        height=height,
+        x_offset=x_offset,
+        y_offset=y_offset,
         num_horiz_cells=15,
         num_vert_cells=10,
     )
+    print("border_coords:\n", border_coords)
     #TODO: incorporate using fixed samples (and uniformly spaced points among smaples)
     fixed_samples = fixed_samples_from_border_coords(border_coords)
+    print("fixed_samples:\n", '\n'.join([str(sample) for sample in fixed_samples]))
     while True:
         rand_index = randint(0, len(border_coords) - 1)
         rand_cell = border_coords[rand_index]
@@ -42,7 +55,8 @@ def main():
         #sleep(1 / 250) # Delay for one tenth of a second
         sleep(1 / 100) # Delay for one tenth of a second
 
-main()
+if __name__ == "__main__":
+    main()
 
 #TODO: remove print statements and other uncecessary slowdowns
 #TODO:

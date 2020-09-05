@@ -64,6 +64,7 @@ def min_spaced_samples(
     width=100, 
     height=100,
     max_fail_count=1000,
+    debug=False,
 ):
     output_samples = []
     x1, y1, x2, y2 = (
@@ -90,7 +91,7 @@ def min_spaced_samples(
                 valid = True
         if valid:
             output_samples.append(new_point)
-    if fails > 1000:
+    if fails > 1000 and debug:
         print("fails:", fails)
     return output_samples
 
@@ -99,6 +100,8 @@ def fixed_samples_from_border_coords(
     n_samples=10,
     sample_width=100,
     sample_height=100,
+    x_offset=0,
+    y_offset=0,
     edge_buffer=2,#pixels
 ):
     fixed_samples = []
@@ -108,7 +111,13 @@ def fixed_samples_from_border_coords(
             (x1 + sample_width) - edge_buffer, 
             (y1 + sample_height) - edge_buffer,
         )
-        sample_coords = [rand_coord_in_rect(x1, y1, x2, y2) for _ in range(n_samples)]
+        sample_coords = min_spaced_samples( 
+            #arguments tuned to default values of min_spaced_samples
+            origin_coord=coord,
+            width=sample_width,
+            height=sample_height,
+        )
+        #sample_coords = [rand_coord_in_rect(x1, y1, x2, y2) for _ in range(n_samples)]
         fixed_samples.append(sample_coords)
     return fixed_samples
 
@@ -150,6 +159,8 @@ def rand_coord_in_rect(x1, y1, x2, y2):
 def get_edge_sample_coords(
     width = 1600,
     height = 900,
+    x_offset = 0,
+    y_offset = 0,
     sample_width = 100, 
     num_horiz_cells = 7,
     num_vert_cells = 5,
@@ -174,24 +185,26 @@ def get_edge_sample_coords(
     (the above sample uses a num_horiz_cells of 5 and a num_vert_cells of 4)
     """
     #trim off the last values, those squares would extend off the screen
-    top_edge_x_vals = list(range(0, width, width // num_horiz_cells))
-    right_edge_y_vals = list(range(0, height, height // num_vert_cells))
+    top_edge_x_vals = list(range(x_offset, width + x_offset, width // num_horiz_cells))
+    print("top_edge_x_vals is: {}".format(top_edge_x_vals))
+    right_edge_y_vals = list(range(y_offset, height + y_offset, height // num_vert_cells))
+    print("right_edge_y_vals is: {}".format(right_edge_y_vals))
     if len(top_edge_x_vals) > num_horiz_cells:
         top_edge_x_vals = top_edge_x_vals[:-1]
     for index, edge_coord in enumerate(top_edge_x_vals):
-        if (edge_coord + sample_width) > width:
-            top_edge_x_vals[index] = width - sample_width
+        if (edge_coord + sample_width) > width + x_offset:
+            top_edge_x_vals[index] = (width + x_offset) - sample_width
     if len(right_edge_y_vals) > num_vert_cells:
         right_edge_y_vals = right_edge_y_vals[:-1]
     for index, edge_coord in enumerate(right_edge_y_vals):
-        if (edge_coord + sample_width) > height:
-            right_edge_y_vals[index] = height - sample_width
+        if (edge_coord + sample_width) > height + y_offset:
+            right_edge_y_vals[index] = (height + y_offset) - sample_width
     bottom_edge_x_vals = top_edge_x_vals[::-1] #reverse order
     left_edge_y_vals = right_edge_y_vals[::-1] #reverse order
-    top_edge_coords = [(x_val, 0) for x_val in top_edge_x_vals]
-    right_edge_coords = [(width - sample_width, y_val) for y_val in right_edge_y_vals]
-    bottom_edge_coords = [(x_val, height - sample_width) for x_val in bottom_edge_x_vals]
-    left_edge_coords = [(0, y_val) for y_val in left_edge_y_vals]
+    top_edge_coords = [(x_val, y_offset) for x_val in top_edge_x_vals]
+    right_edge_coords = [((width + x_offset) - sample_width, y_val) for y_val in right_edge_y_vals]
+    bottom_edge_coords = [(x_val, (height + y_offset) - sample_width) for x_val in bottom_edge_x_vals]
+    left_edge_coords = [(x_offset, y_val) for y_val in left_edge_y_vals]
     if debug:
         print("top:", top_edge_coords)
         print("right:", right_edge_coords)
