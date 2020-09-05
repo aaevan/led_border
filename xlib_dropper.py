@@ -6,6 +6,7 @@
 from os import getenv
 from time import sleep
 from random import randint
+from math import sqrt
 
 from Xlib.display import Display
 from Xlib.X import ZPixmap
@@ -49,6 +50,49 @@ def get_rgb_of_pixel(coords=(0, 0)):
     # convert from hex to int
     r, g, b = [int(val, 16) for val in (red, green, blue)]
     return (r, g, b)    
+
+def linear_distance(coord_a=(0, 0), coord_b=(10, 10)):
+    x1, y1, x2, y2 = *coord_a, *coord_b
+    rise, run = x2 - x1, y2 - y1
+    distance = sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2))
+    return distance
+
+def min_spaced_samples(
+    n_samples=10, 
+    min_distance=25, #tuned to a width and height of 100
+    origin_coord=(0, 0), 
+    width=100, 
+    height=100,
+    max_fail_count=1000,
+):
+    output_samples = []
+    x1, y1, x2, y2 = (
+        *origin_coord, 
+        origin_coord[0] + width,
+        origin_coord[1] + height,
+    )
+    fails = 0
+    while len(output_samples) < n_samples:
+        new_point = [randint(x1, x2), randint(y1, y2)]
+        valid = False
+        if output_samples == []:
+            output_samples.append(new_point)
+        for point in output_samples:
+            if fails >= max_fail_count:
+                print("min_spaced_samples failed out")
+                return
+            distance = linear_distance(coord_a=new_point, coord_b=point)
+            if distance < min_distance:
+                valid = False
+                fails += 1
+                break
+            else:
+                valid = True
+        if valid:
+            output_samples.append(new_point)
+    if fails > 1000:
+        print("fails:", fails)
+    return output_samples
 
 def fixed_samples_from_border_coords(
     border_coords,
