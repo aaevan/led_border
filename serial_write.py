@@ -33,12 +33,11 @@ def main():
     print("fixed_samples:\n", '\n'.join([str(sample) for sample in fixed_samples]))
     while True:
         rand_index = randint(0, len(border_coords) - 1)
-        rand_cell = border_coords[rand_index]
-        rand_cell_rgb = mean_rgb_from_samples(take_n_samples_from_rect(rand_cell))
-        print("rand_led_index:", rand_index)
-        print("rand_cell:", rand_cell)
-        if rand_cell_rgb[0] <= 50:
-            rand_cell_rgb[0] = 0
+        rand_sample = fixed_samples[rand_index]
+        rgb_sample_values = get_values_from_fixed_sample(rand_sample)
+        rand_cell_rgb = mean_rgb_from_samples(rgb_sample_values)
+        #if rand_cell_rgb[0] <= 50: #zero out low values of the red component
+            #rand_cell_rgb[0] = 0
         print("rand_cell_rgb:", rand_cell_rgb)
         joined_nums = ','.join([str(val) for val in rand_cell_rgb])
         comma_separated = '{},{}\n'.format(rand_index, joined_nums)
@@ -53,7 +52,8 @@ def main():
         """
         ser.write(comma_separated.encode()) # Convert the decimal number to ASCII then send it to the Arduino
         #sleep(1 / 250) # Delay for one tenth of a second
-        sleep(1 / 100) # Delay for one tenth of a second
+        #sleep(1 / 100) # Delay for one tenth of a second
+        sleep(.05) # Delay for one tenth of a second
 
 if __name__ == "__main__":
     main()

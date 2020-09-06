@@ -58,7 +58,7 @@ def linear_distance(coord_a=(0, 0), coord_b=(10, 10)):
     return distance
 
 def min_spaced_samples(
-    n_samples=10, 
+    n_samples=5, 
     min_distance=25, #tuned to a width and height of 100
     origin_coord=(0, 0), 
     width=100, 
@@ -123,6 +123,7 @@ def fixed_samples_from_border_coords(
 
 def take_n_samples_from_rect(
     top_left_coord=(0, 0),
+    #n_samples=10, 
     n_samples=10, 
     sample_width=100,
     sample_height=100,
@@ -141,14 +142,21 @@ def take_n_samples_from_rect(
     rgb_samples = [get_rgb_of_pixel(coords=coord) for coord in coords]
     return rgb_samples
 
+def get_values_from_fixed_sample(sample, debug=False):
+    rgb_samples = [get_rgb_of_pixel(coords=coord) for coord in sample]
+    if debug:
+        print("rgb_samples:", rgb_samples)
+    return rgb_samples
+
 def mean_rgb_from_samples(samples):
     r_sum, g_sum, b_sum = 0, 0, 0
     for sample in samples:
+        #print("(mean_rgb_from_sample) sample:", sample)
         r_val, g_val, b_val = sample
         r_sum += r_val
-        g_val += g_val
-        b_val += b_val
-    r_mean, g_mean, b_mean = [val // len(samples) for val in (r_sum, g_val, b_val)]
+        g_sum += g_val
+        b_sum += b_val
+    r_mean, g_mean, b_mean = [val // len(samples) for val in (r_sum, g_sum, b_sum)]
     return [r_mean, g_mean, b_mean]
 
 def rand_coord_in_rect(x1, y1, x2, y2):
