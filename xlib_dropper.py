@@ -66,6 +66,15 @@ def min_spaced_samples(
     max_fail_count=1000,
     debug=False,
 ):
+    """
+    returns a list of lists of coordinate values to poll from.
+
+    new random values each sampling result in lots of flickering
+    fixed pixel locations averaged together produce more steady and
+    consistent color.
+
+    Larger values of n_samples return more washed out colors?
+    """
     output_samples = []
     x1, y1, x2, y2 = (
         *origin_coord, 
