@@ -174,13 +174,15 @@ def rand_coord_in_rect(x1, y1, x2, y2):
     return (x, y)
 
 def get_edge_sample_coords(
-    width = 1600,
-    height = 900,
-    x_offset = 0,
-    y_offset = 0,
-    sample_width = 100, 
-    num_horiz_cells = 7,
-    num_vert_cells = 5,
+    width=1600,
+    height=900,
+    x_offset=0,
+    y_offset=0,
+    sample_width=100, 
+    num_horiz_cells=7,
+    num_vert_cells=5,
+    starting_corner="bottom left",
+    clockwise=True,
     debug=False,
 ):
     """
@@ -227,5 +229,11 @@ def get_edge_sample_coords(
         print("right:", right_edge_coords)
         print("bottom:", bottom_edge_coords)
         print("left:", left_edge_coords)
-    output_coord_list = top_edge_coords + right_edge_coords + bottom_edge_coords + left_edge_coords
+
+    if starting_corner == "top left": #clockwise
+        output_coord_list = top_edge_coords + right_edge_coords + bottom_edge_coords + left_edge_coords
+    elif starting_corner == "bottom left": #clockwise
+        output_coord_list = left_edge_coords + top_edge_coords + right_edge_coords + bottom_edge_coords
+    if not clockwise:
+        output_coord_list = output_coord_list[::-1]
     return output_coord_list
