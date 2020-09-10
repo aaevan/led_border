@@ -39,6 +39,19 @@ def init_brightness_map(
         val *= multiplier
     return [round(val) for val in arr]
 
+def scale_by_brightest(
+    rgb_value=(200, 100, 50),
+    brightness_map=init_brightness_map(),
+):
+    max_val = max(rgb_value)
+    if max_val == 0:
+        return rgb_value
+    scaled_max_val = brightness_map[max_val - 1]
+    scaling_factor = scaled_max_val / max_val
+    output_rgb = [int(val * scaling_factor) for val in rgb_value]
+    return output_rgb
+
+
 def main(debug=False):
     #TODO: auto scan USB ports and fail gracefully if no device connected
     num_leds = 50
@@ -79,8 +92,8 @@ def main(debug=False):
         new_val = interpolate_rgb(current_val, dest_val, fade_ratio=.9)
         last_set[led_index] = new_val
         #apply a non-linear brightness map:
-        #TODO: scale the brightness based on the brightest value, keeping the relative color the same
         #new_val = [brightness_map[val - 1] for val in new_val] #TODO: fix strange hyper-saturated colors
+        new_val = scale_by_brightest(new_val, brightness_map)
         #TODO: fix inverted colors??
         #zero out small values
         if sum(new_val) < 10:
