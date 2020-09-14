@@ -1,7 +1,7 @@
 from time import sleep
 import serial
 from random import randint, shuffle
-from xlib_dropper import *
+from get_samples import *
 from find_corners import *
 from itertools import cycle
 

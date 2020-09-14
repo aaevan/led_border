@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Adapted from the xlib example from
+# Adapted in part from the xlib example from
 # https://blog.wizardsoftheweb.pro/quickly-detect-cursor-position-and-color/#caveats
 
 from os import getenv
@@ -205,9 +205,10 @@ def get_edge_sample_coords(
     """
     #trim off the last values, those squares would extend off the screen
     top_edge_x_vals = list(range(x_offset, width + x_offset, width // num_horiz_cells))
-    print("top_edge_x_vals is: {}".format(top_edge_x_vals))
     right_edge_y_vals = list(range(y_offset, height + y_offset, height // num_vert_cells))
-    print("right_edge_y_vals is: {}".format(right_edge_y_vals))
+    if debug:
+        print("right_edge_y_vals is: {}".format(right_edge_y_vals))
+        print("top_edge_x_vals is: {}".format(top_edge_x_vals))
     if len(top_edge_x_vals) > num_horiz_cells:
         top_edge_x_vals = top_edge_x_vals[:-1]
     for index, edge_coord in enumerate(top_edge_x_vals):
@@ -229,7 +230,6 @@ def get_edge_sample_coords(
         print("right:", right_edge_coords)
         print("bottom:", bottom_edge_coords)
         print("left:", left_edge_coords)
-
     if starting_corner == "top left": #clockwise
         output_coord_list = top_edge_coords + right_edge_coords + bottom_edge_coords + left_edge_coords
     elif starting_corner == "bottom left": #clockwise
