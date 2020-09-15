@@ -42,11 +42,11 @@ def get_rgb_of_pixel(coords=(0, 0)):
         plane_mask=int("0xFFFFFF", 16)
     )
     # strip its color info
-    PIXEL = getattr(DISPLAY_IMAGE, 'data').hex()
+    pixel = getattr(DISPLAY_IMAGE, 'data').hex()
     # pick out just the relevant hex digits
-    red = PIXEL[4:6] 
-    green = PIXEL[2:4]
-    blue = PIXEL[0:2]
+    red = pixel[4:6] 
+    green = pixel[2:4]
+    blue = pixel[0:2]
     # convert from hex to int
     r, g, b = [int(val, 16) for val in (red, green, blue)]
     return (r, g, b)    
@@ -126,17 +126,15 @@ def fixed_samples_from_border_coords(
             width=sample_width,
             height=sample_height,
         )
-        #sample_coords = [rand_coord_in_rect(x1, y1, x2, y2) for _ in range(n_samples)]
         fixed_samples.append(sample_coords)
     return fixed_samples
 
 def take_n_samples_from_rect(
     top_left_coord=(0, 0),
-    #n_samples=10, 
     n_samples=10, 
     sample_width=100,
     sample_height=100,
-    edge_buffer=2,#pixels
+    edge_buffer=2,
     fixed_samples=None
 ):
     x1, y1 = top_left_coord
@@ -160,7 +158,6 @@ def get_values_from_fixed_sample(sample, debug=False):
 def mean_rgb_from_samples(samples):
     r_sum, g_sum, b_sum = 0, 0, 0
     for sample in samples:
-        #print("(mean_rgb_from_sample) sample:", sample)
         r_val, g_val, b_val = sample
         r_sum += r_val
         g_sum += g_val
@@ -203,7 +200,6 @@ def get_edge_sample_coords(
     returns a list of top-left coordinates for each box.
     (the above sample uses a num_horiz_cells of 5 and a num_vert_cells of 4)
     """
-    #trim off the last values, those squares would extend off the screen
     top_edge_x_vals = list(range(x_offset, width + x_offset, width // num_horiz_cells))
     right_edge_y_vals = list(range(y_offset, height + y_offset, height // num_vert_cells))
     if debug:
@@ -220,7 +216,7 @@ def get_edge_sample_coords(
         if (edge_coord + sample_width) > height + y_offset:
             right_edge_y_vals[index] = (height + y_offset) - sample_width
     bottom_edge_x_vals = top_edge_x_vals[::-1] #reverse order
-    left_edge_y_vals = right_edge_y_vals[::-1] #reverse order
+    left_edge_y_vals = right_edge_y_vals[::-1]
     top_edge_coords = [(x_val, y_offset) for x_val in top_edge_x_vals]
     right_edge_coords = [((width + x_offset) - sample_width, y_val) for y_val in right_edge_y_vals]
     bottom_edge_coords = [(x_val, (height + y_offset) - sample_width) for x_val in bottom_edge_x_vals]
@@ -230,9 +226,9 @@ def get_edge_sample_coords(
         print("right:", right_edge_coords)
         print("bottom:", bottom_edge_coords)
         print("left:", left_edge_coords)
-    if starting_corner == "top left": #clockwise
+    if starting_corner == "top left": 
         output_coord_list = top_edge_coords + right_edge_coords + bottom_edge_coords + left_edge_coords
-    elif starting_corner == "bottom left": #clockwise
+    elif starting_corner == "bottom left":
         output_coord_list = left_edge_coords + top_edge_coords + right_edge_coords + bottom_edge_coords
     if not clockwise:
         output_coord_list = output_coord_list[::-1]
