@@ -92,9 +92,7 @@ def main(debug=False):
         new_val = interpolate_rgb(current_val, dest_val, fade_ratio=.9)
         last_set[led_index] = new_val
         #apply a non-linear brightness map:
-        #new_val = [brightness_map[val - 1] for val in new_val] #TODO: fix strange hyper-saturated colors
         new_val = scale_by_brightest(new_val, brightness_map)
-        #TODO: fix inverted colors??
         #zero out small values
         if sum(new_val) < 10:
             new_val = [0, 0, 0]
@@ -103,7 +101,7 @@ def main(debug=False):
         if debug:
             print("comma_separated:", comma_separated.rstrip())
         ser.write(comma_separated.encode()) 
-        sleep(1 / 300) 
+        sleep(1 / 100) 
 
 if __name__ == "__main__":
     main()
