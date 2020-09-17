@@ -1,12 +1,9 @@
 from time import sleep
 import serial
-from random import randint, shuffle
+from random import shuffle
 from get_samples import *
 from find_corners import *
 from itertools import cycle
-
-def rand_rgb(ceiling=50):
-    return [randint(0, ceiling) for _ in range(3)]
 
 def get_opposite_color(rgb_tuple):
     red, green, blue = [255 - val for val in rgb_tuple]
